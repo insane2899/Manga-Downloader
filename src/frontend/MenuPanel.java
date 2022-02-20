@@ -142,8 +142,8 @@ public class MenuPanel extends JPanel{
 		this.setVisible(true);
 	}
 	
-	private void searchManga(String mangaUrl) {
-		manga = WebScraper.getManga(mangaUrl);
+	private void searchManga(String mangaUrl,String websiteName) {
+		manga = Website.getManga(mangaUrl,websiteName);
 		for(String s:manga.getChapterList()) {
 			JCheckBox box = new JCheckBox(s);
 			box.setAlignmentX(LEFT_ALIGNMENT);
@@ -195,7 +195,7 @@ public class MenuPanel extends JPanel{
 					if(e.getStateChange()==1) {
 						chapterPanel.removeAll();
 						manga = null;
-						searchManga(mangaList.get(mapElements.getKey()));
+						searchManga(mangaList.get(mapElements.getKey()),websiteName);
 					}
 					else if(e.getStateChange()==0) {
 						chapterPanel.removeAll();

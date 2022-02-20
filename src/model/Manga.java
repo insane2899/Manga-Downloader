@@ -9,10 +9,7 @@ public class Manga {
 	private Map<String,String> chapterLinks;
 	private List<String> chapterList;
 	private String name;
-	/*
-	 * TODO
-	 *	private String imageUrl;
-	*/
+	private String coverUrl;
 	
 	public String getName() {
 		return this.name;
@@ -20,6 +17,10 @@ public class Manga {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setCoverUrl(String url) {
+		this.coverUrl = url;
 	}
 	
 	public Manga() {

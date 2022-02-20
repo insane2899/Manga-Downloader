@@ -63,24 +63,27 @@ public final class WebScraper {
 		return mangaList;
 	}
 	
-	public static Manga getManga(String url,String name) {
+	public static Manga getManga(String url,String titleClassName,String titleItemName,
+			String chapterClassName,String chapterItemName,String coverClassName,String coverItemName) {
 		Manga manga = new Manga();
 		try {
 			Document page = Jsoup.connect(url).get();
-			Elements pageElements = page.select("a[href]");
-			for(Element e:pageElements) {
-				boolean flag = false;
-				for(String z:match) {
-					if(e.text().contains(z) || e.text().contains(z.toLowerCase())||e.text().contains(z.toUpperCase())) {
-						flag=true;
-						break;
-					}
-				}
-				if(flag) {
-					manga.addChapter(e.text(), e.attr("abs:href"));
-				}
+			Elements titleElements = page.getElementsByClass(titleClassName);
+			Elements title = titleElements.select(titleItemName);
+			for(Element e:title) {
+				manga.setName(e.text());
 			}
-			manga.setName(name);
+			Elements chapterElements = page.getElementsByClass(chapterClassName);
+			Elements chapters = chapterElements.select(chapterItemName);
+			for(Element e:chapters) {
+				manga.addChapter(e.text(), e.attr("abs:href"));
+			}
+			Elements coverElements = page.getElementsByClass(coverClassName);
+			Elements cover = coverElements.select(coverItemName);
+			for(Element e:cover) {
+				manga.setCoverUrl(e.attr("abs:href"));
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import model.Manga;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -38,6 +41,18 @@ public class Website {
 		//System.out.println(website+" "+mangaClassName+" "+ mangaItemName+" "+paginationClassName+" "+paginationItemName);
 		return WebScraper.getMangaList(website, mangaClassName, mangaItemName,
 				paginationClassName,paginationItemName);
+	}
+	
+	public static Manga getManga(String url,String websiteName){
+		String mangaTitle = websiteDetails.getProperty(websiteName+"-Manga-Title");
+		String mangaChapters = websiteDetails.getProperty(websiteName+"-Manga-Chapters");
+		String coverImage = websiteDetails.getProperty(websiteName+"-Manga-CoverImage");
+		StringTokenizer title = new StringTokenizer(mangaTitle,";");
+		StringTokenizer chapters = new StringTokenizer(mangaChapters,";");
+		StringTokenizer cover = new StringTokenizer(coverImage,";");
+		Manga manga = WebScraper.getManga(url,title.nextToken(),title.nextToken(),
+				chapters.nextToken(),chapters.nextToken(),cover.nextToken(),cover.nextToken());
+		return manga;
 	}
 	
 	
