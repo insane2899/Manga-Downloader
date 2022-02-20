@@ -6,14 +6,18 @@ import java.awt.Dimension;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.JSplitPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
 
 import model.Manga;
 import webscraper.WebScraper;
+import webscraper.Website;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -21,6 +25,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
+import java.util.Map;
 import java.util.LinkedList;
 
 public class MenuPanel extends JPanel{
@@ -29,15 +34,18 @@ public class MenuPanel extends JPanel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Dimension MENUPANEL_DIMENSION = new Dimension(400,1000);
-	private final JLabel linkLabel,nameLabel,chapterLabel;
-	private JTextField textField,textField2;
-	private JButton search,download;
-	private JScrollPane scrollPane;
-	private JPanel chapterPanel;
+	private static final Dimension MENUPANEL_DIMENSION = new Dimension(1000,950);
+	private final JLabel linkLabel;
+	private JComboBox websiteDropdown;
+	private JButton download;
+	private JScrollPane chapterScrollPane,mangaScrollPane;
+	private JSplitPane splitPane;
+	private JPanel mangaPanel,chapterPanel;
 	private JCheckBox selectAll,deselectAll;
 	private List<String> downloadList = new LinkedList<>();
 	private Manga manga;
+	private List<String> websiteList;
+	private TitledBorder chapterBorder,mangaBorder;
 	/**
 	 * Create the application.
 	 */
@@ -45,35 +53,24 @@ public class MenuPanel extends JPanel{
 		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		this.setPreferredSize(MENUPANEL_DIMENSION);
 		
-		this.linkLabel = new JLabel("Enter the Link to the Manga:");
+		this.linkLabel = new JLabel("Select a website:");
 		linkLabel.setFont(new Font("Yrsa", Font.BOLD, 20));
 		linkLabel.setAlignmentX(CENTER_ALIGNMENT);
 		add(linkLabel);
 		
-		this.textField = new JTextField();
-		this.textField.setMaximumSize(new Dimension(350,40));
-		textField.setAlignmentX(CENTER_ALIGNMENT);
-		add(textField);
-		
-		this.nameLabel = new JLabel("Enter the Name of the Manga:");
-		nameLabel.setFont(new Font("Yrsa", Font.BOLD, 20));
-		nameLabel.setAlignmentX(CENTER_ALIGNMENT);
-		add(nameLabel);
-		
-		this.textField2 = new JTextField();
-		this.textField2.setMaximumSize(new Dimension(350,40));
-		textField2.setAlignmentX(CENTER_ALIGNMENT);
-		add(textField2);
-		
-		this.search = new JButton("Search");
-		search.setAlignmentX(CENTER_ALIGNMENT);
-		add(search);
-		search.addActionListener(new ActionListener() {
+		websiteList = Website.importWebsiteList();
+		this.websiteDropdown = new JComboBox(websiteList.toArray());
+		websiteDropdown.setAlignmentX(CENTER_ALIGNMENT);
+		websiteDropdown.addItemListener(new ItemListener(){
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				searchManga();
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED) {
+					importMangaList();
+				}
 			}
 		});
+		
+		add(websiteDropdown);
 		
 		this.selectAll = new JCheckBox("Select All Chapters");
 		selectAll.setFont(new Font("Yrsa",Font.PLAIN,16));
@@ -102,20 +99,35 @@ public class MenuPanel extends JPanel{
 		});
 		
 		
-		this.chapterLabel = new JLabel("Chapters:");
-		chapterLabel.setFont(new Font("Yrsa", Font.BOLD, 20));
-		chapterLabel.setAlignmentX(CENTER_ALIGNMENT);
-		add(chapterLabel);
-		
+		this.chapterBorder = new TitledBorder("Chapter List:");
+		chapterBorder.setTitleJustification(TitledBorder.CENTER);
+		chapterBorder.setTitlePosition(TitledBorder.TOP);
 		this.chapterPanel = new JPanel();
 		chapterPanel.setLayout(new BoxLayout(chapterPanel,BoxLayout.PAGE_AXIS));
 		chapterPanel.setSize(new Dimension(300,600));
-		chapterPanel.setAlignmentX(CENTER_ALIGNMENT);
+		chapterPanel.setBorder(chapterBorder);
 		
-		this.scrollPane = new JScrollPane(chapterPanel);
-		scrollPane.setAlignmentX(CENTER_ALIGNMENT);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		add(scrollPane);
+		this.chapterScrollPane = new JScrollPane(chapterPanel);
+		chapterScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		
+		this.mangaBorder = new TitledBorder("Manga List:");
+		mangaBorder.setTitleJustification(TitledBorder.CENTER);
+		mangaBorder.setTitlePosition(TitledBorder.TOP);
+		this.mangaPanel = new JPanel();
+		mangaPanel.setLayout(new BoxLayout(mangaPanel,BoxLayout.PAGE_AXIS));
+		mangaPanel.setSize(new Dimension(300,600));
+		mangaPanel.setBorder(mangaBorder);
+		
+		this.mangaScrollPane = new JScrollPane(mangaPanel);
+		mangaScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);;
+		
+		this.splitPane = new JSplitPane(SwingConstants.VERTICAL,mangaScrollPane,chapterScrollPane);
+		this.splitPane.resetToPreferredSizes();
+		this.splitPane.setEnabled(false);
+		this.splitPane.setResizeWeight(0.5);
+		this.splitPane.setAlignmentX(CENTER_ALIGNMENT);
+		add(splitPane);
+		
 		
 		this.download = new JButton("Download");
 		download.setAlignmentX(CENTER_ALIGNMENT);
@@ -131,35 +143,11 @@ public class MenuPanel extends JPanel{
 	}
 	
 	private void searchManga() {
-		chapterPanel.removeAll();
-		//Perform Search using WebScraping
-		this.manga = WebScraper.getManga(textField.getText(),textField2.getText());
-		if(manga==null) {
-			//Error display
-			return;
-		}
-		
-		
-		//Add all checkboxes into the jpanel
-		for(String s:manga.getChapterList()) {
-			JCheckBox box = new JCheckBox(s);
-			box.setFont(new Font("Yrsa",Font.ITALIC,20));
-			box.setAlignmentX(LEFT_ALIGNMENT);
-			box.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					if(e.getStateChange()==1) {
-						downloadList.add(s);
-					}
-					else if(e.getStateChange()==0) {
-						if(downloadList.contains(s)) {
-							downloadList.remove(s);
-						}
-					}
-				}
-			});
-			chapterPanel.add(box);
-		}
+		/* TODO
+		 * 1. Connect to Website to get website details
+		 * 2. Connect to WebScraper using website details obtained
+		 * 2. Get All Manga list from website and add them to mangaList panel
+		*/
 		SwingUtilities.invokeLater(()->{
 			this.revalidate();
 		});
@@ -178,5 +166,25 @@ public class MenuPanel extends JPanel{
 		for(int i=0;i<components.length;i++) {
 			((JCheckBox)components[i]).setSelected(selection);
 		}
+	}
+	
+	private void importMangaList() {
+		String websiteName = websiteDropdown.getSelectedItem().toString();
+		Map<String,String> mangaList = 
+				Website.getMangaList(websiteName);
+		for(Map.Entry<String,String> mapElements:mangaList.entrySet()) {
+			JCheckBox box = new JCheckBox(mapElements.getKey());
+			box.setAlignmentX(CENTER_ALIGNMENT);
+			box.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					//TODO
+				}
+			});
+			mangaPanel.add(box);
+		}
+		SwingUtilities.invokeLater(()->{
+			this.revalidate();
+		});
 	}
 }

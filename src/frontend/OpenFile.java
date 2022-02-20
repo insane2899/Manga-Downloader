@@ -8,13 +8,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class OpenFile {
 
 	private JFrame frame;
 	private JPanel coverPanel, menuPanel;
 	private JSplitPane splitPane;
-	private static Dimension OUTER_PANEL_DIMENSION = new Dimension(1200,1000);
+	private static Dimension OUTER_PANEL_DIMENSION = new Dimension(1600,950);
 	
 	/**
 	 * Launch the application.
@@ -36,10 +37,10 @@ public class OpenFile {
 		this.coverPanel = new CoverPanel();
 		this.menuPanel = new MenuPanel();
 		this.splitPane = new JSplitPane(SwingConstants.VERTICAL,menuPanel,coverPanel);
-		//this.splitPane.resetToPreferredSizes();
-		this.splitPane.setEnabled(true);
-		this.splitPane.setResizeWeight(0.60);
-		this.frame.add(splitPane,BorderLayout.CENTER);
+		this.splitPane.resetToPreferredSizes();
+		//this.splitPane.setEnabled(true);
+		//this.splitPane.setResizeWeight(1.0);
+		this.frame.getContentPane().add(splitPane,BorderLayout.CENTER);
 		this.frame.pack();
 	}
 	

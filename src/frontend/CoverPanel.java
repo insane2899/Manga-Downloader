@@ -15,13 +15,13 @@ public class CoverPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Dimension COVER_PANEL_DIMENSION = new Dimension(800,1200);
+	private static final Dimension COVER_PANEL_DIMENSION = new Dimension(800,950);
 	private Image image;
 	private Image scaledImage;
 	
 	public CoverPanel() {
 		this.setPreferredSize(COVER_PANEL_DIMENSION);
-		loadImage("static/intro.png");
+		loadImage("static/page1.jpg");
 		this.setVisible(true);
 	}
 	
@@ -45,7 +45,7 @@ public class CoverPanel extends JPanel {
 	
 	@Override
 	public Dimension getPreferredSize() {
-		return image==null?new Dimension(200,200):new Dimension(image.getWidth(this),image.getHeight(this));
+		return image==null?new Dimension(200,200):COVER_PANEL_DIMENSION;
 	}
 	
 	@Override
