@@ -6,7 +6,6 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.IOException;
 import java.util.LinkedList;
 
 public class Website {
@@ -29,15 +28,14 @@ public class Website {
 		String website = websiteDetails.getProperty(websiteName+"-Website");
 		String websiteListString = websiteDetails.getProperty(websiteName+"-Manga-List");
 		String paginationString = websiteDetails.getProperty(websiteName+"-Manga-List-Pagination");
-		System.out.println(websiteListString+"\n"+paginationString);
+		//System.out.println(websiteListString+"\n"+paginationString);
 		StringTokenizer mangaList = new StringTokenizer(websiteListString,";");
 		String mangaClassName = mangaList.nextToken();
 		String mangaItemName = mangaList.nextToken();
 		StringTokenizer paginationList = new StringTokenizer(paginationString,";");
 		String paginationClassName = paginationList.nextToken();
 		String paginationItemName = paginationList.nextToken();
-		System.out.println(website+" "+mangaClassName+" "+
-				mangaItemName+" "+paginationClassName+" "+paginationItemName);
+		//System.out.println(website+" "+mangaClassName+" "+ mangaItemName+" "+paginationClassName+" "+paginationItemName);
 		return WebScraper.getMangaList(website, mangaClassName, mangaItemName,
 				paginationClassName,paginationItemName);
 	}

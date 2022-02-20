@@ -142,12 +142,26 @@ public class MenuPanel extends JPanel{
 		this.setVisible(true);
 	}
 	
-	private void searchManga() {
-		/* TODO
-		 * 1. Connect to Website to get website details
-		 * 2. Connect to WebScraper using website details obtained
-		 * 2. Get All Manga list from website and add them to mangaList panel
-		*/
+	private void searchManga(String mangaUrl) {
+		manga = WebScraper.getManga(mangaUrl);
+		for(String s:manga.getChapterList()) {
+			JCheckBox box = new JCheckBox(s);
+			box.setAlignmentX(LEFT_ALIGNMENT);
+			box.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if(e.getStateChange()==1) {
+						downloadList.add(s);
+					}
+					else if(e.getStateChange()==0) {
+						if(downloadList.contains(s)) {
+							downloadList.remove(s);
+						}
+					}
+				}
+			});
+			chapterPanel.add(box);
+		}
 		SwingUtilities.invokeLater(()->{
 			this.revalidate();
 		});
@@ -174,11 +188,19 @@ public class MenuPanel extends JPanel{
 				Website.getMangaList(websiteName);
 		for(Map.Entry<String,String> mapElements:mangaList.entrySet()) {
 			JCheckBox box = new JCheckBox(mapElements.getKey());
-			box.setAlignmentX(CENTER_ALIGNMENT);
-			box.addActionListener(new ActionListener() {
+			box.setAlignmentX(LEFT_ALIGNMENT);
+			box.addItemListener(new ItemListener() {
 				@Override
-				public void actionPerformed(ActionEvent e) {
-					//TODO
+				public void itemStateChanged(ItemEvent e) {
+					if(e.getStateChange()==1) {
+						chapterPanel.removeAll();
+						manga = null;
+						searchManga(mangaList.get(mapElements.getKey()));
+					}
+					else if(e.getStateChange()==0) {
+						chapterPanel.removeAll();
+						manga=null;
+					}
 				}
 			});
 			mangaPanel.add(box);

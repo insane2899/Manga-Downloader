@@ -37,6 +37,8 @@ public final class WebScraper {
 			for(Element e:mangaElements) {
 				url = e.attr("abs:href");
 				mangaList.putAll(getMangaListOnPage(url,mangaClassName,mangaItemName));
+				//TODO only 3 pages will return as a single page has only 3 pagination links
+				//Correct it.
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -53,8 +55,10 @@ public final class WebScraper {
 			for(Element e:mangaElements) {
 				mangaList.put(e.text(), e.attr("abs:href"));
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
+		}catch(org.jsoup.HttpStatusException e) {
+			return mangaList;
+		}catch(IOException e) {
+			return mangaList;
 		}
 		return mangaList;
 	}
