@@ -8,11 +8,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import model.Manga;
@@ -142,7 +142,7 @@ public class MenuPanel extends JPanel{
 		this.setVisible(true);
 	}
 	
-	private void searchManga(String mangaUrl,String websiteName) {
+	private void getManga(String mangaUrl,String websiteName) {
 		manga = Website.getManga(mangaUrl,websiteName);
 		for(String s:manga.getChapterList()) {
 			JCheckBox box = new JCheckBox(s);
@@ -162,9 +162,8 @@ public class MenuPanel extends JPanel{
 			});
 			chapterPanel.add(box);
 		}
-		SwingUtilities.invokeLater(()->{
-			this.revalidate();
-		});
+		this.revalidate();
+		OpenFile.setImage(manga.getCoverUrl());
 	}
 	
 	private void downloadChapters() {
@@ -172,7 +171,7 @@ public class MenuPanel extends JPanel{
 		
 		WebScraper.downloadChapters(downloadList,manga);
 		downloadList.clear();
-		System.out.println("Done Downloading");
+		JOptionPane.showMessageDialog(null,"Download Complete!");
 	}
 	
 	private void setChapterSelection(boolean selection) {
@@ -195,7 +194,7 @@ public class MenuPanel extends JPanel{
 					if(e.getStateChange()==1) {
 						chapterPanel.removeAll();
 						manga = null;
-						searchManga(mangaList.get(mapElements.getKey()),websiteName);
+						getManga(mangaList.get(mapElements.getKey()),websiteName);
 					}
 					else if(e.getStateChange()==0) {
 						chapterPanel.removeAll();
@@ -205,8 +204,6 @@ public class MenuPanel extends JPanel{
 			});
 			mangaPanel.add(box);
 		}
-		SwingUtilities.invokeLater(()->{
-			this.revalidate();
-		});
+		this.revalidate();
 	}
 }

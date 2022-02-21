@@ -8,13 +8,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 public class OpenFile {
 
 	private JFrame frame;
-	private JPanel coverPanel, menuPanel;
-	private JSplitPane splitPane;
+	private static JPanel coverPanel, menuPanel;
+	private static JSplitPane splitPane;
 	private static Dimension OUTER_PANEL_DIMENSION = new Dimension(1600,950);
 	
 	/**
@@ -28,19 +27,19 @@ public class OpenFile {
 		initialize();
 	}
 	
-	private void initialize() {
+	public void initialize() {
 		this.frame = new JFrame();
 		frame.setTitle("Manga Downloader");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.setSize(OUTER_PANEL_DIMENSION);
-		this.coverPanel = new CoverPanel();
-		this.menuPanel = new MenuPanel();
-		this.splitPane = new JSplitPane(SwingConstants.VERTICAL,menuPanel,coverPanel);
-		this.splitPane.resetToPreferredSizes();
+		coverPanel = new CoverPanel();
+		menuPanel = new MenuPanel();
+		splitPane = new JSplitPane(SwingConstants.VERTICAL,menuPanel,coverPanel);
+		splitPane.resetToPreferredSizes();
 		//this.splitPane.setEnabled(true);
 		//this.splitPane.setResizeWeight(1.0);
-		this.frame.getContentPane().add(splitPane,BorderLayout.CENTER);
+		frame.getContentPane().add(splitPane,BorderLayout.CENTER);
 		this.frame.pack();
 	}
 	
@@ -55,6 +54,10 @@ public class OpenFile {
 				}
 			}
 		});
+	}
+	
+	protected static void setImage(String url) {
+		((CoverPanel)coverPanel).setImage(url);
 	}
 
 }

@@ -23,6 +23,10 @@ public class Manga {
 		this.coverUrl = url;
 	}
 	
+	public String getCoverUrl() {
+		return this.coverUrl;
+	}
+	
 	public Manga() {
 		this.chapterLinks = new HashMap<>();
 		this.chapterList = new LinkedList<>();

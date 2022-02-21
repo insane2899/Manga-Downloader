@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -52,6 +53,17 @@ public class CoverPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.drawImage(scaledImage, 10,10,null);
+	}
+	
+	protected void setImage(String url) {
+		try {
+			URL imageUrl = new URL(url);
+			this.image = ImageIO.read(imageUrl);
+			this.revalidate();
+			this.repaint();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 
