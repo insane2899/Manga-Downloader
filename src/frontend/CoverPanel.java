@@ -62,7 +62,7 @@ public class CoverPanel extends JPanel {
 			this.revalidate();
 			this.repaint();
 		}catch(Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	

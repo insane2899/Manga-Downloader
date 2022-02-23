@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 
@@ -25,6 +26,47 @@ public final class WebScraper {
 	
 	private WebScraper() {}
 	
+	public static Map<String,String> getMangaListBFS(String url,String mangaClassName,
+			String mangaItemName,String paginationClassName,String paginationItemName){
+		Map<String,String> mangaList = new HashMap<String,String>();
+		Set<Integer> done = new HashSet<>();
+		LinkedList<String> queue = new LinkedList<String>();
+		queue.add(url);
+		done.add(1);
+		while(queue.size()!=0) {
+			try {
+				url = queue.poll();
+				System.out.println(url);
+				mangaList.putAll(getMangaListOnPage(url,mangaClassName,mangaItemName));
+				Document page = Jsoup.connect(url).get();
+				Elements classElement = page.getElementsByClass(paginationClassName);
+				Elements mangaElements = classElement.select(paginationItemName);
+				for(Element e:mangaElements) {
+					url = e.attr("abs:href");
+					String str = e.text().replaceAll("[^0-9]","");
+					if(str.equals("")) {
+						continue;
+					}
+					int pageNo = Integer.parseInt(str);
+					if(!done.contains(pageNo)) {
+						done.add(pageNo);
+						queue.add(url);
+					}
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return mangaList;
+	}
+	
+	public static Map<String,String> getMangaListOnePage(String url,String mangaClassName,
+			String mangaItemName,String paginationClassName,String paginationItemName){
+		return getMangaListOnPage(url,mangaClassName,mangaItemName);
+	}
+
+	
 	public static Map<String,String> getMangaList(String url,String mangaClassName,
 			String mangaItemName,String paginationClassName,String paginationItemName){
 		Map<String,String> mangaList = new HashMap<String,String>();
@@ -37,7 +79,12 @@ public final class WebScraper {
 			done.add(1);
 			for(Element e:mangaElements) {
 				url = e.attr("abs:href");
-				int pageNo = Integer.parseInt(e.text());
+				String str = e.text().replaceAll("[^0-9]","");
+				if(str.equals("")) {
+					continue;
+				}
+				int pageNo = Integer.parseInt(str);
+				
 				if(!done.contains(pageNo)) {
 					System.out.println(pageNo);
 					done.add(pageNo);
@@ -60,7 +107,11 @@ public final class WebScraper {
 			mangaList.putAll(getMangaListOnPage(url,mangaClassName,mangaItemName));
 			for(Element e:mangaElements) {
 				url = e.attr("abs:href");
-				int pageNo = Integer.parseInt(e.text());
+				String str = e.text().replaceAll("[^0-9]","");
+				if(str.equals("")) {
+					continue;
+				}
+				int pageNo = Integer.parseInt(str);
 				if(!done.contains(pageNo)) {
 					System.out.println(pageNo);
 					done.add(pageNo);
@@ -83,7 +134,7 @@ public final class WebScraper {
 				mangaList.put(e.text(), e.attr("abs:href"));
 			}
 		}catch(org.jsoup.HttpStatusException e) {
-			return mangaList;
+			e.printStackTrace();
 		}catch(IOException e) {
 			return mangaList;
 		}
@@ -93,6 +144,7 @@ public final class WebScraper {
 	public static Manga getManga(String url,String titleClassName,String titleItemName,
 			String chapterClassName,String chapterItemName,String coverClassName,String coverItemName) {
 		Manga manga = new Manga();
+		//System.out.println(titleClassName+" "+titleItemName);
 		try {
 			Document page = Jsoup.connect(url).get();
 			Elements titleElements = page.getElementsByClass(titleClassName);
@@ -114,6 +166,7 @@ public final class WebScraper {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println(manga);
 		return manga;
 	}
 	

@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 import model.Manga;
@@ -46,6 +47,7 @@ public class MenuPanel extends JPanel{
 	private Manga manga;
 	private List<String> websiteList;
 	private TitledBorder chapterBorder,mangaBorder;
+	private Map<String,String> mangaList;
 	/**
 	 * Create the application.
 	 */
@@ -143,6 +145,7 @@ public class MenuPanel extends JPanel{
 	}
 	
 	private void getManga(String mangaUrl,String websiteName) {
+		//System.out.println(mangaUrl+" "+websiteName);
 		manga = Website.getManga(mangaUrl,websiteName);
 		for(String s:manga.getChapterList()) {
 			JCheckBox box = new JCheckBox(s);
@@ -183,8 +186,27 @@ public class MenuPanel extends JPanel{
 	
 	private void importMangaList() {
 		String websiteName = websiteDropdown.getSelectedItem().toString();
-		Map<String,String> mangaList = 
-				Website.getMangaList(websiteName);
+		importMangaList(websiteName);
+	}
+	
+	private void importMangaList(String websiteName) {
+		SwingWorker importer = new SwingWorker() {
+			@Override
+			protected String doInBackground() throws Exception{
+				mangaList = Website.getMangaList(websiteName);
+				return "Finished Execution";
+			}
+			
+			@Override
+			protected void done() {
+				displayMangaList(websiteName);
+				System.out.println("Inside done function "+websiteName);
+			}
+		};
+		importer.execute();
+	}
+	
+	private void displayMangaList(String websiteName) {
 		for(Map.Entry<String,String> mapElements:mangaList.entrySet()) {
 			JCheckBox box = new JCheckBox(mapElements.getKey());
 			box.setAlignmentX(LEFT_ALIGNMENT);

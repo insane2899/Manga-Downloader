@@ -45,5 +45,10 @@ public class Manga {
 		return chapterLinks.getOrDefault(chapterName, null);
 	}
 	
+	@Override
+	public String toString() {
+		return this.name+" "+this.chapterList;
+	}
+	
 	
 }

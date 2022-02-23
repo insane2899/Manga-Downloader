@@ -50,6 +50,7 @@ public class Website {
 		StringTokenizer title = new StringTokenizer(mangaTitle,";");
 		StringTokenizer chapters = new StringTokenizer(mangaChapters,";");
 		StringTokenizer cover = new StringTokenizer(coverImage,";");
+		//System.out.println(coverImage+" "+mangaTitle+" "+mangaChapters);
 		Manga manga = WebScraper.getManga(url,title.nextToken(),title.nextToken(),
 				chapters.nextToken(),chapters.nextToken(),cover.nextToken(),cover.nextToken());
 		return manga;
