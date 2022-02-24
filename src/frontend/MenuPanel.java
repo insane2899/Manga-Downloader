@@ -48,6 +48,7 @@ public class MenuPanel extends JPanel{
 	private List<String> websiteList;
 	private TitledBorder chapterBorder,mangaBorder;
 	private Map<String,String> mangaList;
+	private String websiteName;
 	/**
 	 * Create the application.
 	 */
@@ -144,7 +145,7 @@ public class MenuPanel extends JPanel{
 		this.setVisible(true);
 	}
 	
-	private void getManga(String mangaUrl,String websiteName) {
+	private void getManga(String mangaUrl) {
 		//System.out.println(mangaUrl+" "+websiteName);
 		manga = Website.getManga(mangaUrl,websiteName);
 		for(String s:manga.getChapterList()) {
@@ -172,7 +173,7 @@ public class MenuPanel extends JPanel{
 	private void downloadChapters() {
 		//Perform Download using WebScraping
 		
-		WebScraper.downloadChapters(downloadList,manga);
+		Website.downloadChapters(websiteName,downloadList,manga);
 		downloadList.clear();
 		JOptionPane.showMessageDialog(null,"Download Complete!");
 	}
@@ -185,7 +186,8 @@ public class MenuPanel extends JPanel{
 	}
 	
 	private void importMangaList() {
-		String websiteName = websiteDropdown.getSelectedItem().toString();
+		String web = websiteDropdown.getSelectedItem().toString();
+		this.websiteName = web;
 		importMangaList(websiteName);
 	}
 	
@@ -216,7 +218,7 @@ public class MenuPanel extends JPanel{
 					if(e.getStateChange()==1) {
 						chapterPanel.removeAll();
 						manga = null;
-						getManga(mangaList.get(mapElements.getKey()),websiteName);
+						getManga(mangaList.get(mapElements.getKey()));
 					}
 					else if(e.getStateChange()==0) {
 						chapterPanel.removeAll();

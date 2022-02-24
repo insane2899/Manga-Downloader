@@ -29,27 +29,22 @@ public final class WebScraper {
 	public static Map<String,String> getMangaListBFS(String url,String mangaClassName,
 			String mangaItemName,String paginationClassName,String paginationItemName){
 		Map<String,String> mangaList = new HashMap<String,String>();
-		Set<Integer> done = new HashSet<>();
+		Set<String> done = new HashSet<>();
 		LinkedList<String> queue = new LinkedList<String>();
 		queue.add(url);
-		done.add(1);
+		done.add(url);
 		while(queue.size()!=0) {
 			try {
 				url = queue.poll();
 				System.out.println(url);
 				mangaList.putAll(getMangaListOnPage(url,mangaClassName,mangaItemName));
 				Document page = Jsoup.connect(url).get();
-				Elements classElement = page.getElementsByClass(paginationClassName);
+				Elements classElement = page.select(paginationClassName);
 				Elements mangaElements = classElement.select(paginationItemName);
 				for(Element e:mangaElements) {
 					url = e.attr("abs:href");
-					String str = e.text().replaceAll("[^0-9]","");
-					if(str.equals("")) {
-						continue;
-					}
-					int pageNo = Integer.parseInt(str);
-					if(!done.contains(pageNo)) {
-						done.add(pageNo);
+					if(!done.contains(url)) {
+						done.add(url);
 						queue.add(url);
 					}
 				}
@@ -73,7 +68,7 @@ public final class WebScraper {
 		Set<Integer> done = new HashSet<>();
 		try {
 			Document page = Jsoup.connect(url).get();
-			Elements classElement = page.getElementsByClass(paginationClassName);
+			Elements classElement = page.select(paginationClassName);
 			Elements mangaElements = classElement.select(paginationItemName);
 			mangaList.putAll(getMangaListOnPage(url,mangaClassName,mangaItemName));
 			done.add(1);
@@ -102,7 +97,7 @@ public final class WebScraper {
 		Map<String,String> mangaList = new HashMap<String,String>();
 		try {
 			Document page = Jsoup.connect(url).get();
-			Elements classElement = page.getElementsByClass(paginationClassName);
+			Elements classElement = page.select(paginationClassName);
 			Elements mangaElements = classElement.select(paginationItemName);
 			mangaList.putAll(getMangaListOnPage(url,mangaClassName,mangaItemName));
 			for(Element e:mangaElements) {
@@ -128,7 +123,7 @@ public final class WebScraper {
 		Map<String,String> mangaList = new HashMap<String,String>();
 		try {
 			Document page = Jsoup.connect(url).get();
-			Elements classElement = page.getElementsByClass(mangaClassName);
+			Elements classElement = page.select(mangaClassName);
 			Elements mangaElements = classElement.select(mangaItemName);
 			for(Element e:mangaElements) {
 				mangaList.put(e.text(), e.attr("abs:href"));
@@ -144,20 +139,20 @@ public final class WebScraper {
 	public static Manga getManga(String url,String titleClassName,String titleItemName,
 			String chapterClassName,String chapterItemName,String coverClassName,String coverItemName) {
 		Manga manga = new Manga();
-		//System.out.println(titleClassName+" "+titleItemName);
 		try {
 			Document page = Jsoup.connect(url).get();
-			Elements titleElements = page.getElementsByClass(titleClassName);
+			Elements titleElements = page.select(titleClassName);
 			Elements title = titleElements.select(titleItemName);
 			for(Element e:title) {
 				manga.setName(e.text());
 			}
-			Elements chapterElements = page.getElementsByClass(chapterClassName);
+			Elements chapterElements = page.select(chapterClassName);
 			Elements chapters = chapterElements.select(chapterItemName);
 			for(Element e:chapters) {
+				//System.out.println(e.text()+" "+e.attr("abs:href"));
 				manga.addChapter(e.text(), e.attr("abs:href"));
 			}
-			Elements coverElements = page.getElementsByClass(coverClassName);
+			Elements coverElements = page.select(coverClassName);
 			Elements cover = coverElements.select(coverItemName);
 			for(Element e:cover) {
 				manga.setCoverUrl(e.attr("abs:src"));
@@ -166,28 +161,25 @@ public final class WebScraper {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(manga);
 		return manga;
 	}
 	
-	public static void downloadChapters(List<String> chapterList,Manga manga) {
+	public static void downloadChapters(List<String> chapterList,Manga manga,String imageClass,String imageItem) {
 		String destination = "Mangas/"+manga.getName();
 		for(String s:chapterList) {
-			downloadChapter(manga.getChapterURL(s),destination+"/"+s);
+			downloadChapter(manga.getChapterURL(s),destination+"/"+s,imageClass,imageItem);
 		}
 	}
 	
-	private static void downloadChapter(String url,String destination) {
+	private static void downloadChapter(String url,String destination,String imageClass,String imageItem) {
 		try {
 			int count = 1;
 			Document page = Jsoup.connect(url).get();
-			Elements pageElements = page.select("img");
+			Elements imageElements = page.select(imageClass);
+			Elements pageElements = imageElements.select(imageItem);
 			for(Element e:pageElements) {
-				//System.out.println(e.attr("src"));
-				if(!e.attr("src").contains("http")) {
-					continue;
-				}
-				storeImageIntoFS(e.attr("src"),Integer.toString(count++)+".jpg",destination);
+				//System.out.println(e.attr("abs:src"));
+				storeImageIntoFS(e.attr("abs:src"),Integer.toString(count++)+".jpg",destination);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

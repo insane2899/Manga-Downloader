@@ -39,7 +39,7 @@ public class Website {
 		String paginationClassName = paginationList.nextToken();
 		String paginationItemName = paginationList.nextToken();
 		//System.out.println(website+" "+mangaClassName+" "+ mangaItemName+" "+paginationClassName+" "+paginationItemName);
-		return WebScraper.getMangaList(website, mangaClassName, mangaItemName,
+		return WebScraper.getMangaListOnePage(website, mangaClassName, mangaItemName,
 				paginationClassName,paginationItemName);
 	}
 	
@@ -64,6 +64,12 @@ public class Website {
 			list.add(websiteList.nextToken());
 		}
 		return list;
+	}
+	
+	public static void downloadChapters(String websiteName,List<String> downloadList,Manga manga) {
+		String image = websiteDetails.getProperty(websiteName+"-Manga-Chapter-Images");
+		StringTokenizer st = new StringTokenizer(image,";");
+		WebScraper.downloadChapters(downloadList, manga,st.nextToken(),st.nextToken());
 	}
 	
 }
