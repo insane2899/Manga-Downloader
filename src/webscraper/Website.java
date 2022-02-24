@@ -39,7 +39,7 @@ public class Website {
 		String paginationClassName = paginationList.nextToken();
 		String paginationItemName = paginationList.nextToken();
 		//System.out.println(website+" "+mangaClassName+" "+ mangaItemName+" "+paginationClassName+" "+paginationItemName);
-		return WebScraper.getMangaListOnePage(website, mangaClassName, mangaItemName,
+		return WebScraper.getMangaListBFS(website, mangaClassName, mangaItemName,
 				paginationClassName,paginationItemName);
 	}
 	
