@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
@@ -38,13 +39,14 @@ public class MenuPanel extends JPanel{
 	private static final Dimension MENUPANEL_DIMENSION = new Dimension(1000,950);
 	private final JLabel linkLabel;
 	private JComboBox websiteDropdown;
-	private JButton download;
+	private JButton download,search;
 	private JScrollPane chapterScrollPane,mangaScrollPane;
 	private JSplitPane splitPane;
-	private JPanel mangaPanel,chapterPanel;
+	private JPanel mangaPanel,chapterPanel,searchMangaPanel;
 	private JCheckBox selectAll,deselectAll;
 	private List<String> downloadList = new LinkedList<>();
 	private Manga manga;
+	private JTextField searchManga;
 	private List<String> websiteList;
 	private TitledBorder chapterBorder,mangaBorder;
 	private Map<String,String> mangaList;
@@ -102,6 +104,28 @@ public class MenuPanel extends JPanel{
 		});
 		
 		
+		this.searchManga = new JTextField();
+		searchManga.setPreferredSize(new Dimension(600, 20));
+		searchManga.setAlignmentX(LEFT_ALIGNMENT);
+		searchManga.setMaximumSize(new Dimension(900, 80));
+		this.search = new JButton("Search");
+		search.setAlignmentX(RIGHT_ALIGNMENT);
+		search.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchManga();
+			}
+		});
+		this.searchMangaPanel = new JPanel();
+		searchMangaPanel.setLayout(new BoxLayout(searchMangaPanel,BoxLayout.X_AXIS));
+		searchMangaPanel.setMaximumSize(new Dimension(1000,20));
+		searchMangaPanel.setAlignmentX(CENTER_ALIGNMENT);
+		searchMangaPanel.add(searchManga);
+		searchMangaPanel.add(search);
+		searchMangaPanel.setVisible(false);
+		add(searchMangaPanel);
+		
+		
 		this.chapterBorder = new TitledBorder("Chapter List:");
 		chapterBorder.setTitleJustification(TitledBorder.CENTER);
 		chapterBorder.setTitlePosition(TitledBorder.TOP);
@@ -122,7 +146,7 @@ public class MenuPanel extends JPanel{
 		mangaPanel.setBorder(mangaBorder);
 		
 		this.mangaScrollPane = new JScrollPane(mangaPanel);
-		mangaScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);;
+		mangaScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		
 		this.splitPane = new JSplitPane(SwingConstants.VERTICAL,mangaScrollPane,chapterScrollPane);
 		this.splitPane.resetToPreferredSizes();
@@ -146,7 +170,6 @@ public class MenuPanel extends JPanel{
 	}
 	
 	private void getManga(String mangaUrl) {
-		//System.out.println(mangaUrl+" "+websiteName);
 		manga = Website.getManga(mangaUrl,websiteName);
 		for(String s:manga.getChapterList()) {
 			JCheckBox box = new JCheckBox(s);
@@ -172,10 +195,24 @@ public class MenuPanel extends JPanel{
 	
 	private void downloadChapters() {
 		//Perform Download using WebScraping
-		
-		Website.downloadChapters(websiteName,downloadList,manga);
-		downloadList.clear();
-		JOptionPane.showMessageDialog(null,"Download Complete!");
+		downloadChapters(websiteName,downloadList,manga);
+	}
+	
+	private void downloadChapters(String websiteName,List<String> downloadList,Manga manga) {
+		SwingWorker importer = new SwingWorker() {
+			@Override
+			protected String doInBackground() throws Exception{
+				Website.downloadChapters(websiteName,downloadList,manga);
+				return "Finished Download";
+			}
+			
+			@Override
+			public void done() {
+				downloadList.clear();
+				JOptionPane.showMessageDialog(null,"Download Complete!");
+			}
+		};
+		importer.execute();
 	}
 	
 	private void setChapterSelection(boolean selection) {
@@ -196,7 +233,7 @@ public class MenuPanel extends JPanel{
 			@Override
 			protected String doInBackground() throws Exception{
 				mangaList = Website.getMangaList(websiteName);
-				return "Finished Execution";
+				return "Finished Importing mangalist";
 			}
 			
 			@Override
@@ -228,6 +265,19 @@ public class MenuPanel extends JPanel{
 			});
 			mangaPanel.add(box);
 		}
+		this.searchMangaPanel.setVisible(true);
 		this.revalidate();
+	}
+	
+	private void searchManga() {
+		String mangaName = this.searchManga.getText();
+		if(mangaList.getOrDefault(mangaName,null)!=null) {
+			chapterPanel.removeAll();
+			manga = null;
+			getManga(mangaList.get(mangaName));
+		}
+		else {
+			JOptionPane.showMessageDialog(null,"Manga Not Found!");
+		}
 	}
 }
