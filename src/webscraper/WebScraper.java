@@ -177,6 +177,13 @@ public final class WebScraper {
 		}
 	}
 	
+	public static void downloadChapters(List<String> chapterList,Manga manga,String imageClass,String imageItem,String downloadPath) {
+		String destination = downloadPath+"/"+manga.getName();
+		for(String s:chapterList) {
+			downloadChapter(manga.getChapterURL(s),destination+"/"+s,imageClass,imageItem);
+		}
+	}
+	
 	private static void downloadChapter(String url,String destination,String imageClass,String imageItem) {
 		try {
 			int count = 1;

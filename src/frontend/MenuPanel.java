@@ -7,6 +7,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -16,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileSystemView;
 
 import model.Manga;
 import webscraper.WebScraper;
@@ -51,6 +53,7 @@ public class MenuPanel extends JPanel{
 	private TitledBorder chapterBorder,mangaBorder;
 	private Map<String,String> mangaList;
 	private String websiteName;
+	private JFileChooser fileChooser;
 	/**
 	 * Create the application.
 	 */
@@ -165,7 +168,6 @@ public class MenuPanel extends JPanel{
 			}
 		});
 		add(download);
-		
 		this.setVisible(true);
 	}
 	
@@ -194,15 +196,23 @@ public class MenuPanel extends JPanel{
 	}
 	
 	private void downloadChapters() {
+		//Get the download directory
+		String downloadPath = "";
+		fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int r = fileChooser.showOpenDialog(null);
+		if(r == JFileChooser.APPROVE_OPTION) {
+			downloadPath = fileChooser.getSelectedFile().getAbsolutePath();
+		}
 		//Perform Download using WebScraping
-		downloadChapters(websiteName,downloadList,manga);
+		downloadChapters(websiteName,downloadList,manga,downloadPath);
 	}
 	
-	private void downloadChapters(String websiteName,List<String> downloadList,Manga manga) {
+	private void downloadChapters(String websiteName,List<String> downloadList,Manga manga,String downloadPath) {
 		SwingWorker importer = new SwingWorker() {
 			@Override
 			protected String doInBackground() throws Exception{
-				Website.downloadChapters(websiteName,downloadList,manga);
+				Website.downloadChapters(websiteName,downloadList,manga,downloadPath);
 				return "Finished Download";
 			}
 			
@@ -232,6 +242,7 @@ public class MenuPanel extends JPanel{
 		SwingWorker importer = new SwingWorker() {
 			@Override
 			protected String doInBackground() throws Exception{
+				
 				mangaList = Website.getMangaList(websiteName);
 				return "Finished Importing mangalist";
 			}

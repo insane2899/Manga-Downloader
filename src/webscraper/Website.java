@@ -72,4 +72,10 @@ public class Website {
 		WebScraper.downloadChapters(downloadList, manga,st.nextToken(),st.nextToken());
 	}
 	
+	public static void downloadChapters(String websiteName,List<String> downloadList,Manga manga,String downloadPath) {
+		String image = websiteDetails.getProperty(websiteName+"-Manga-Chapter-Images");
+		StringTokenizer st = new StringTokenizer(image,";");
+		WebScraper.downloadChapters(downloadList, manga,st.nextToken(),st.nextToken(),downloadPath);
+	}
+	
 }
