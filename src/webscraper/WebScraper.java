@@ -126,7 +126,13 @@ public final class WebScraper {
 			Elements classElement = page.select(mangaClassName);
 			Elements mangaElements = classElement.select(mangaItemName);
 			for(Element e:mangaElements) {
-				mangaList.put(e.text(), e.attr("abs:href"));
+				if(e.text().equals("")) {
+					mangaList.put(e.attr("title"), e.attr("abs:href"));
+				}
+				else {
+					mangaList.put(e.text(), e.attr("abs:href"));
+				}
+				//System.out.println(e.text()+" "+e.attr("abs:href"));
 			}
 		}catch(org.jsoup.HttpStatusException e) {
 			e.printStackTrace();
