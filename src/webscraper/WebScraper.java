@@ -170,21 +170,21 @@ public final class WebScraper {
 		return manga;
 	}
 	
-	public static void downloadChapters(List<String> chapterList,Manga manga,String imageClass,String imageItem) {
+	public static void downloadChapters(List<String> chapterList,Manga manga,String imageClass,String imageItem,String userAgent,String referrer) {
 		String destination = "Mangas/"+manga.getName();
 		for(String s:chapterList) {
-			downloadChapter(manga.getChapterURL(s),destination+"/"+s,imageClass,imageItem);
+			downloadChapter(manga.getChapterURL(s),destination+"/"+s,imageClass,imageItem,userAgent,referrer);
 		}
 	}
 	
-	public static void downloadChapters(List<String> chapterList,Manga manga,String imageClass,String imageItem,String downloadPath) {
+	public static void downloadChapters(List<String> chapterList,Manga manga,String imageClass,String imageItem,String userAgent,String referrer,String downloadPath) {
 		String destination = downloadPath+"/"+manga.getName();
 		for(String s:chapterList) {
-			downloadChapter(manga.getChapterURL(s),destination+"/"+s,imageClass,imageItem);
+			downloadChapter(manga.getChapterURL(s),destination+"/"+s,imageClass,imageItem,userAgent,referrer);
 		}
 	}
 	
-	private static void downloadChapter(String url,String destination,String imageClass,String imageItem) {
+	private static void downloadChapter(String url,String destination,String imageClass,String imageItem,String userAgent,String referrer) {
 		try {
 			int count = 1;
 			Document page = Jsoup.connect(url).get();
@@ -192,16 +192,21 @@ public final class WebScraper {
 			Elements pageElements = imageElements.select(imageItem);
 			for(Element e:pageElements) {
 				//System.out.println(e.attr("abs:src"));
-				storeImageIntoFS(e.attr("abs:src"),Integer.toString(count++)+".jpg",destination);
+				storeImageIntoFS(e.attr("abs:src"),Integer.toString(count++)+".jpg",destination,userAgent,referrer);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static String storeImageIntoFS(String imageUrl,String fileName,String relativePath) {
+	private static String storeImageIntoFS(String imageUrl,String fileName,String relativePath,String userAgent,String referrer) {
 		try {
-			byte[] bytes = Jsoup.connect(imageUrl).ignoreContentType(true).execute().bodyAsBytes();
+			byte[] bytes = Jsoup.connect(imageUrl)
+					.userAgent(userAgent)
+					.referrer(referrer)
+					.ignoreContentType(true)
+					.execute()
+					.bodyAsBytes();
 			ByteBuffer buffer = ByteBuffer.wrap(bytes);
 			saveByteBufferImage(buffer,relativePath,fileName);
 		}catch(IOException e) {

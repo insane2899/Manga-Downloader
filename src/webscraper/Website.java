@@ -68,14 +68,18 @@ public class Website {
 	
 	public static void downloadChapters(String websiteName,List<String> downloadList,Manga manga) {
 		String image = websiteDetails.getProperty(websiteName+"-Manga-Chapter-Images");
+		String userAgent = websiteDetails.getProperty(websiteName+"-User-Agent");
+		String referrer = websiteDetails.getProperty(websiteName+"-Manga-Chapter-Images-Referrer");
 		StringTokenizer st = new StringTokenizer(image,";");
-		WebScraper.downloadChapters(downloadList, manga,st.nextToken(),st.nextToken());
+		WebScraper.downloadChapters(downloadList, manga,st.nextToken(),st.nextToken(),userAgent,referrer);
 	}
 	
 	public static void downloadChapters(String websiteName,List<String> downloadList,Manga manga,String downloadPath) {
 		String image = websiteDetails.getProperty(websiteName+"-Manga-Chapter-Images");
+		String userAgent = websiteDetails.getProperty(websiteName+"-User-Agent");
+		String referrer = websiteDetails.getProperty(websiteName+"-Manga-Chapter-Images-Referrer");
 		StringTokenizer st = new StringTokenizer(image,";");
-		WebScraper.downloadChapters(downloadList, manga,st.nextToken(),st.nextToken(),downloadPath);
+		WebScraper.downloadChapters(downloadList, manga,st.nextToken(),st.nextToken(),userAgent,referrer,downloadPath);
 	}
 	
 }
