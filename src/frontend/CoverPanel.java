@@ -22,13 +22,13 @@ public class CoverPanel extends JPanel {
 	
 	public CoverPanel() {
 		this.setPreferredSize(COVER_PANEL_DIMENSION);
-		loadImage("static/page1.jpg");
+		loadImage("/static/page1.jpg");
 		this.setVisible(true);
 	}
 	
 	private void loadImage(String fileName) {
 		try {
-			image = ImageIO.read(new File(fileName));
+			image = ImageIO.read(CoverPanel.class.getResourceAsStream(fileName));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

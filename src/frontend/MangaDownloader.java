@@ -19,6 +19,8 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import com.sun.tools.javac.Main;
+
 public class MangaDownloader {
 
 	private JFrame frame;
@@ -70,7 +72,7 @@ public class MangaDownloader {
 		JLabel picLabel;
 		
 		try {
-			BufferedImage img = ImageIO.read(new File("static/intro.png"));
+			BufferedImage img = ImageIO.read(MangaDownloader.class.getResourceAsStream("/static/intro.png"));
 			picLabel = new JLabel(new ImageIcon(img));
 			panel.add(picLabel);
 		} catch (IOException e) {

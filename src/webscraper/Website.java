@@ -7,17 +7,17 @@ import java.util.StringTokenizer;
 
 import model.Manga;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 
 public class Website {
 	
-	private static FileReader fileReader;
+	private static InputStream fileReader;
 	private static Properties websiteDetails;
 	static {
 		try {
-			fileReader = new FileReader("static/website.properties");
+			fileReader = Website.class.getResourceAsStream("/static/website.properties");
 			websiteDetails = new Properties();
 			websiteDetails.load(fileReader);
 		}catch(IOException e) {

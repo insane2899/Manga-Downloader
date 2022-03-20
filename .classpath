@@ -7,6 +7,7 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/WebScraping"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="res"/>
 	<classpathentry kind="lib" path="/home/soumik/.p2/pool/plugins/org.eclipse.osgi_3.17.100.v20211104-1730.jar" sourcepath="/home/soumik/.p2/pool/plugins/org.eclipse.osgi.source_3.17.100.v20211104-1730.jar"/>
 	<classpathentry kind="lib" path="/home/soumik/.p2/pool/plugins/org.eclipse.core.commands_3.10.100.v20210722-1426.jar" sourcepath="/home/soumik/.p2/pool/plugins/org.eclipse.core.commands.source_3.10.100.v20210722-1426.jar"/>
 	<classpathentry kind="lib" path="/home/soumik/.p2/pool/plugins/org.eclipse.equinox.common_3.15.100.v20211021-1418.jar" sourcepath="/home/soumik/.p2/pool/plugins/org.eclipse.equinox.common.source_3.15.100.v20211021-1418.jar"/>
